@@ -1,3 +1,7 @@
+terraform init
+terraform apply
+Create a Dockerfile in your repository to define how to build the Medusa backend Docker image.
+//
 output "medusa_backend_url" {
   value = aws_ecs_service.medusa_service.network_configuration[0].assign_public_ip
 }
@@ -29,7 +33,25 @@ jobs:
 
     - name: Push Docker image to ECR
       run: |
-        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+        docker push ${{ secrets.AWS_# Use Node.js image as base
+FROM node:16-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Expose port 80 for the backend
+EXPOSE 80
+
+# Start Medusa app
+CMD ["npm", "run", "start"]
+ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
     - name: Update ECS service
       uses: jakejarvis/ecs-deploy-action@v1
@@ -39,3 +61,4 @@ jobs:
         task-definition: medusa-task
         container-name: medusa-backend
         container-image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
